@@ -1,10 +1,12 @@
-import Product from './Product';
+import Product from "./Product";
 
 class OrderItem {
-  private product: Product;
-  private quantity: number;
-  private taxedAmount: number;
-  private tax: number;
+  constructor(
+    private product: Product,
+    private quantity: number = 1,
+    private taxedAmount: number,
+    private tax: number,
+  ) {}
 
   public getProduct(): Product {
     return this.product;
@@ -15,7 +17,7 @@ class OrderItem {
   }
 
   public getQuantity(): number {
-      return this.quantity;
+    return this.quantity;
   }
 
   public setQuantity(quantity: number): void {
@@ -40,4 +42,3 @@ class OrderItem {
 }
 
 export default OrderItem;
-

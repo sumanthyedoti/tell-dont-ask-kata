@@ -1,10 +1,10 @@
 import SellItemRequest from "./SellItemRequest";
 
 class SellItemsRequest {
-  private requests: SellItemRequest[];
+  constructor(private requests: SellItemRequest[]) {}
 
-  public setRequests(requests: SellItemRequest[]): void {
-      this.requests = requests;
+  public addRequests(request: SellItemRequest[]): void {
+    this.requests.push(...request);
   }
 
   public getRequests(): SellItemRequest[] {

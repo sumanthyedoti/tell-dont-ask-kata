@@ -1,4 +1,4 @@
-import Category from './Category';
+import Category from "./Category";
 
 class Product {
   private name: string;
@@ -21,6 +21,19 @@ class Product {
     this.price = price;
   }
 
+  public getTax(): number {
+    return (
+      Math.round((this.price / 100) * this.category.getTaxPercentage() * 100) /
+      100
+    );
+  }
+
+  public getTaxedAmount(): number {
+    const unitaryTaxedAmount: number =
+      Math.round((this.price + this.getTax()) * 100) / 100;
+    return unitaryTaxedAmount;
+  }
+
   public getCategory(): Category {
     return this.category;
   }
@@ -31,4 +44,3 @@ class Product {
 }
 
 export default Product;
-
