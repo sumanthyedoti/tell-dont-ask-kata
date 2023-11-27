@@ -1,3 +1,7 @@
+import { ProductCatalog } from "../repository/ProductCatalog";
+import UnknownProductException from "../useCase/exceptions/UnknownProductException";
+import SellItemRequest from "../useCase/SellItemRequest";
+import SellItemsRequest from "../useCase/SellItemsRequest";
 import OrderItem from "./OrderItem";
 import { OrderStatus } from "./OrderStatus";
 
@@ -9,7 +13,7 @@ class Order {
   private status: OrderStatus;
   private id: number;
 
-  constructor(items: OrderItem[]) {
+  constructor(items: OrderItem[] = []) {
     this.items = items;
     this.status = OrderStatus.CREATED;
     this.currency = "EUR";
@@ -21,45 +25,38 @@ class Order {
     return this.total;
   }
 
-  public setTotal(total: number): void {
-    this.total = total;
-  }
-
   public getCurrency(): string {
     return this.currency;
-  }
-
-  public setCurrency(currency: string): void {
-    this.currency = currency;
   }
 
   public getItems(): OrderItem[] {
     return this.items;
   }
 
-  public addItems(orders: OrderItem[]) {
-    this.items.push(...orders);
-    this.total += orders.reduce(
-      (acc, order) => acc + order.getTaxedAmount(),
-      0,
-    );
-    this.tax += orders.reduce((acc, order) => acc + order.getTax(), 0);
+  private addItem(order: OrderItem) {
+    this.items.push(order);
+    this.total += order.getTaxedAmount();
+    this.tax += order.getTax();
   }
 
   public getTax(): number {
     return this.tax;
   }
 
-  public setTax(tax: number): void {
-    this.tax = tax;
-  }
-
   public getStatus(): OrderStatus {
     return this.status;
   }
 
-  public setStatus(status: OrderStatus): void {
-    this.status = status;
+  public shipOrder(): void {
+    this.status = OrderStatus.SHIPPED;
+  }
+
+  public approveOrder(): void {
+    this.status = OrderStatus.APPROVED;
+  }
+
+  public rejectOrder(): void {
+    this.status = OrderStatus.REJECTED;
   }
 
   public getId(): number {
@@ -68,6 +65,37 @@ class Order {
 
   public setId(id: number): void {
     this.id = id;
+  }
+
+  public createOrder(
+    request: SellItemsRequest,
+    productCatelog: ProductCatalog,
+  ): void {
+    for (const itemRequest of request.getRequests()) {
+      this.addItem(this.createOrderItem(itemRequest, productCatelog));
+    }
+  }
+
+  public getProductTaxedAmount(request: SellItemRequest): number {
+    return (
+      Math.round(
+        request.getProduct().getTaxedAmount() * request.getQuantity() * 100,
+      ) / 100
+    );
+  }
+
+  public getProductTax(request: SellItemRequest): number {
+    return request.getProduct().getTax() * request.getQuantity();
+  }
+
+  private createOrderItem(
+    itemRequest: SellItemRequest,
+    productCatalog: ProductCatalog,
+  ): OrderItem {
+    if (!productCatalog.getByName(itemRequest.getProduct().getName())) {
+      throw new UnknownProductException();
+    }
+    return itemRequest.getProduct().createOrderItem(itemRequest);
   }
 }
 

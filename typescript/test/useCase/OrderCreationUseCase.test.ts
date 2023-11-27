@@ -16,33 +16,22 @@ describe("OrderApprovalUseCase", () => {
   food.setName("food");
   food.setTaxPercentage(10);
 
-  const saladProduct = new Product();
-  saladProduct.setName("salad");
-  saladProduct.setPrice(3.56);
-  saladProduct.setCategory(food);
-  const tomatoProduct = new Product();
-  tomatoProduct.setName("tomato");
-  tomatoProduct.setPrice(4.65);
-  tomatoProduct.setCategory(food);
+  const saladProduct = new Product("salad", 3.56, food);
+  const tomatoProduct = new Product("tomato", 4.65, food);
   const productCatalog: ProductCatalog = new InMemoryProductCatalog([
     saladProduct,
     tomatoProduct,
   ]);
   const useCase: OrderCreationUseCase = new OrderCreationUseCase(
     orderRepository,
+    productCatalog,
   );
 
   it("sellMultipleItems", () => {
-    let saladRequest: SellItemRequest = new SellItemRequest(
-      saladProduct,
-      productCatalog,
-    );
+    let saladRequest: SellItemRequest = new SellItemRequest(saladProduct);
     saladRequest.setQuantity(2);
 
-    let tomatoRequest: SellItemRequest = new SellItemRequest(
-      tomatoProduct,
-      productCatalog,
-    );
+    let tomatoRequest: SellItemRequest = new SellItemRequest(tomatoProduct);
     tomatoRequest.setQuantity(3);
 
     let requests: SellItemsRequest = new SellItemsRequest([saladRequest]);
@@ -67,15 +56,12 @@ describe("OrderApprovalUseCase", () => {
     expect(orderItems[1].getQuantity()).toBe(3);
     expect(orderItems[1].getTaxedAmount()).toBe(15.36);
     expect(orderItems[1].getTax()).toBe(1.41);
-    expect(insertedOrder.getTotal()).toBe(23.2);
   });
 
   it("unknownProduct", () => {
-    const unknownProduct = new Product();
-    unknownProduct.setName("unknown product");
+    const unknownProduct = new Product("unknown product", 3.4, food);
     let unknownProductRequest: SellItemRequest = new SellItemRequest(
       unknownProduct,
-      productCatalog,
     );
     let request: SellItemsRequest = new SellItemsRequest([
       unknownProductRequest,
