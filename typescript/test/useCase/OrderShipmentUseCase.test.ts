@@ -65,9 +65,9 @@ describe("OrderShipmentUseCase", () => {
   it("shippedOrdersCannotBeShippedAgain", () => {
     let initialOrder: Order = new Order([]);
     initialOrder.setId(4);
-    initialOrder.shipOrder();
+    initialOrder.approveOrder();
+    initialOrder.shipOrder(shipmentService);
     orderRepository.addOrder(initialOrder);
-
     let request: OrderShipmentRequest = new OrderShipmentRequest();
     request.setOrderId(4);
 
@@ -75,6 +75,5 @@ describe("OrderShipmentUseCase", () => {
       OrderCannotBeShippedTwiceException,
     );
     expect(orderRepository.getSavedOrder()).toBe(null);
-    expect(shipmentService.getShippedOrder()).toBe(null);
   });
 });

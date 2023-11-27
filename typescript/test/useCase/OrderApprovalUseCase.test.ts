@@ -6,14 +6,17 @@ import OrderApprovalUseCase from "../../src/useCase/OrderApprovalUseCase";
 import RejectedOrderCannotBeApprovedException from "../../src/useCase/exceptions/RejectedOrderCannotBeApprovedException";
 import ShippedOrdersCannotBeChangedException from "../../src/useCase/exceptions/ShippedOrdersCannotBeChangedException";
 import TestOrderRepository from "../doubles/TestOrderRepository";
+import TestShipmentService from "../doubles/TestShipmentService";
 
 describe("OrderApprovalUseCase", () => {
   let orderRepository: TestOrderRepository;
   let useCase: OrderApprovalUseCase;
+  let shipmentService: TestShipmentService;
 
   beforeEach(() => {
     orderRepository = new TestOrderRepository();
     useCase = new OrderApprovalUseCase(orderRepository);
+    shipmentService = new TestShipmentService();
   });
   it("approvedExistingOrder", () => {
     let initialOrder: Order = new Order([]);
@@ -79,8 +82,9 @@ describe("OrderApprovalUseCase", () => {
 
   it("shippedOrdersCannotBeApproved", () => {
     const initialOrder: Order = new Order([]);
-    initialOrder.shipOrder();
     initialOrder.setId(1);
+    initialOrder.approveOrder();
+    initialOrder.shipOrder(shipmentService);
     orderRepository.addOrder(initialOrder);
 
     const request: OrderApprovalRequest = new OrderApprovalRequest();
@@ -95,7 +99,8 @@ describe("OrderApprovalUseCase", () => {
 
   it("shippedOrdersCannotBeRejected", () => {
     let initialOrder: Order = new Order([]);
-    initialOrder.shipOrder();
+    initialOrder.approveOrder();
+    initialOrder.shipOrder(shipmentService);
     initialOrder.setId(1);
     orderRepository.addOrder(initialOrder);
 

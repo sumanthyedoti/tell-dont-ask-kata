@@ -1,5 +1,8 @@
 import { ProductCatalog } from "../repository/ProductCatalog";
+import { ShipmentService } from "../service/ShipmentService";
 import ApprovedOrderCannotBeRejectedException from "../useCase/exceptions/ApprovedOrderCannotBeRejectedException";
+import OrderCannotBeShippedException from "../useCase/exceptions/OrderCannotBeShippedException";
+import OrderCannotBeShippedTwiceException from "../useCase/exceptions/OrderCannotBeShippedTwiceException";
 import RejectedOrderCannotBeApprovedException from "../useCase/exceptions/RejectedOrderCannotBeApprovedException";
 import ShippedOrdersCannotBeChangedException from "../useCase/exceptions/ShippedOrdersCannotBeChangedException";
 import UnknownProductException from "../useCase/exceptions/UnknownProductException";
@@ -51,7 +54,19 @@ class Order {
     return this.status;
   }
 
-  public shipOrder(): void {
+  public shipOrder(shipmentService: ShipmentService): void {
+    if (this.status === OrderStatus.SHIPPED) {
+      throw new OrderCannotBeShippedTwiceException();
+    }
+    if (
+      this.status === OrderStatus.CREATED ||
+      this.status === OrderStatus.REJECTED
+    ) {
+      throw new OrderCannotBeShippedException();
+    }
+
+    shipmentService.ship(this);
+
     this.status = OrderStatus.SHIPPED;
   }
 
