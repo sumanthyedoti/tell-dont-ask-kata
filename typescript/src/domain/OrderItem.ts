@@ -20,24 +20,12 @@ class OrderItem {
     return this.quantity;
   }
 
-  public setQuantity(quantity: number): void {
-    this.quantity = quantity;
-  }
-
   public getTaxedAmount(): number {
     return this.taxedAmount;
   }
 
-  public setTaxedAmount(taxedAmount: number): void {
-    this.taxedAmount = taxedAmount;
-  }
-
   public getTax(): number {
     return this.tax;
-  }
-
-  public setTax(tax: number): void {
-    this.tax = tax;
   }
 }
 

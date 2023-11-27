@@ -95,18 +95,6 @@ class Order {
     }
   }
 
-  public getProductTaxedAmount(request: SellItemRequest): number {
-    return (
-      Math.round(
-        request.getProduct().getTaxedAmount() * request.getQuantity() * 100,
-      ) / 100
-    );
-  }
-
-  public getProductTax(request: SellItemRequest): number {
-    return request.getProduct().getTax() * request.getQuantity();
-  }
-
   private createOrderItem(
     itemRequest: SellItemRequest,
     productCatalog: ProductCatalog,
