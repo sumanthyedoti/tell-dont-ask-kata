@@ -1,5 +1,9 @@
 import { ProductCatalog } from "../repository/ProductCatalog";
+import ApprovedOrderCannotBeRejectedException from "../useCase/exceptions/ApprovedOrderCannotBeRejectedException";
+import RejectedOrderCannotBeApprovedException from "../useCase/exceptions/RejectedOrderCannotBeApprovedException";
+import ShippedOrdersCannotBeChangedException from "../useCase/exceptions/ShippedOrdersCannotBeChangedException";
 import UnknownProductException from "../useCase/exceptions/UnknownProductException";
+import OrderApprovalRequest from "../useCase/OrderApprovalRequest";
 import SellItemRequest from "../useCase/SellItemRequest";
 import SellItemsRequest from "../useCase/SellItemsRequest";
 import OrderItem from "./OrderItem";
@@ -96,6 +100,21 @@ class Order {
       throw new UnknownProductException();
     }
     return itemRequest.getProduct().createOrderItem(itemRequest);
+  }
+
+  public setApprovalStatus(approvaRequest: OrderApprovalRequest) {
+    if (this.status === OrderStatus.SHIPPED) {
+      throw new ShippedOrdersCannotBeChangedException();
+    }
+
+    if (approvaRequest.isApproved() && this.status === OrderStatus.REJECTED) {
+      throw new RejectedOrderCannotBeApprovedException();
+    }
+
+    if (!approvaRequest.isApproved() && this.status === OrderStatus.APPROVED) {
+      throw new ApprovedOrderCannotBeRejectedException();
+    }
+    approvaRequest.isApproved() ? this.approveOrder() : this.rejectOrder();
   }
 }
 
