@@ -5,9 +5,7 @@ import OrderCannotBeShippedException from "../useCase/exceptions/OrderCannotBeSh
 import OrderCannotBeShippedTwiceException from "../useCase/exceptions/OrderCannotBeShippedTwiceException";
 import RejectedOrderCannotBeApprovedException from "../useCase/exceptions/RejectedOrderCannotBeApprovedException";
 import ShippedOrdersCannotBeChangedException from "../useCase/exceptions/ShippedOrdersCannotBeChangedException";
-import UnknownProductException from "../useCase/exceptions/UnknownProductException";
 import OrderApprovalRequest from "../useCase/OrderApprovalRequest";
-import SellItemRequest from "../useCase/SellItemRequest";
 import SellItemsRequest from "../useCase/SellItemsRequest";
 import OrderItem from "./OrderItem";
 import { OrderStatus } from "./OrderStatus";
@@ -91,18 +89,10 @@ class Order {
     productCatelog: ProductCatalog,
   ): void {
     for (const itemRequest of request.getRequests()) {
-      this.addItem(this.createOrderItem(itemRequest, productCatelog));
+      this.addItem(
+        itemRequest.getProduct().createOrderItem(itemRequest, productCatelog),
+      );
     }
-  }
-
-  private createOrderItem(
-    itemRequest: SellItemRequest,
-    productCatalog: ProductCatalog,
-  ): OrderItem {
-    if (!productCatalog.getByName(itemRequest.getProduct().getName())) {
-      throw new UnknownProductException();
-    }
-    return itemRequest.getProduct().createOrderItem(itemRequest);
   }
 
   public setApprovalStatus(approvaRequest: OrderApprovalRequest) {

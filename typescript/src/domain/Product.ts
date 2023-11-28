@@ -1,3 +1,5 @@
+import { ProductCatalog } from "../repository/ProductCatalog";
+import UnknownProductException from "../useCase/exceptions/UnknownProductException";
 import SellItemRequest from "../useCase/SellItemRequest";
 import Category from "./Category";
 import OrderItem from "./OrderItem";
@@ -44,7 +46,13 @@ class Product {
     return this.getTax() * request.getQuantity();
   }
 
-  public createOrderItem(itemRequest: SellItemRequest): OrderItem {
+  public createOrderItem(
+    itemRequest: SellItemRequest,
+    productCatalog: ProductCatalog,
+  ): OrderItem {
+    if (!productCatalog.getByName(itemRequest.getProduct().getName())) {
+      throw new UnknownProductException();
+    }
     return new OrderItem(
       itemRequest.getProduct(),
       itemRequest.getQuantity(),
