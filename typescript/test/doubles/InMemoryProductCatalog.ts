@@ -1,5 +1,5 @@
-import Product from '../../src/domain/Product';
-import { ProductCatalog } from '../../src/repository/ProductCatalog';
+import Product from "../../src/domain/Product";
+import { ProductCatalog } from "../../src/repository/ProductCatalog";
 
 class InMemoryProductCatalog implements ProductCatalog {
   private products: Product[];
@@ -9,9 +9,8 @@ class InMemoryProductCatalog implements ProductCatalog {
   }
 
   public getByName(name: string): Product {
-    return this.products.find(p => p.getName() === name);
+    return this.products.find((p) => p.getName() === name);
   }
 }
 
 export default InMemoryProductCatalog;
-

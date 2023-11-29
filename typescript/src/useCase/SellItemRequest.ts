@@ -1,21 +1,25 @@
+import Product from "../domain/Product";
+
 class SellItemRequest {
   private quantity: number;
-  private productName: string;
-
-  public setQuantity(quantity: number): void{
-      this.quantity = quantity;
+  constructor(private product: Product) {
+    this.quantity = 1;
   }
 
-  public setProductName(productName: string): void {
-      this.productName = productName;
+  public setQuantity(quantity: number): void {
+    this.quantity = quantity;
   }
 
   public getQuantity(): number {
-      return this.quantity;
+    return this.quantity;
   }
 
-  public getProductName(): string {
-      return this.productName;
+  public setProductName(product: Product): void {
+    this.product = product;
+  }
+
+  public getProduct(): Product {
+    return this.product;
   }
 }
 
